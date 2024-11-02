@@ -1,0 +1,27 @@
+
+
+== PHP PDO ==
+
+= PostgreSQL =
+
+http://www.php.net/manual/de/ref.pdo-pgsql.connection.php
+
+pgsql:host=localhost;port=5432;dbname=testdb;user=bruce;password=mypass
+
+
+
+= MySQL =
+
+Anscheinend kein user und passwort im string möglich
+
+http://www.php.net/manual/de/ref.pdo-mysql.connection.php
+
+$dbh = new PDO("mysql:$connstr",  $user, $password);
+mysql:host=localhost;port=3307;dbname=testdb
+mysql:unix_socket=/tmp/mysql.sock;dbname=testdb
+
+= SQLite =
+
+http://www.php.net/manual/de/ref.pdo-sqlite.connection.php
+
+sqlite:/opt/databases/mydb.sq3

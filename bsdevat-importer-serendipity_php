@@ -1,0 +1,111 @@
+<?php
+/**
+ * A Serendipity importer for WordPress.
+ * 
+ * @package BSDEVat\Importer
+ * @file bsdevat-importer-serendipity.php
+ * @date 19.02.2011 17:44:37
+ * @author Sebastian Brandner (http://bsdev.at)
+ */
+namespace BSDEVat\Importer;
+
+/*
+Plugin Name: BSDev.at - Importer: Serendipity
+Plugin URI: http://bsdev.at/projekte/bsdevat-importer-serendipity/
+Description: A <a href="http://s9y.org" target="_blank">Serendipity</a> importer for WordPress.
+Version: 0.0.1
+Author: Sebastian Brandner
+Author URI: http://bsdev.at
+License: GPL2
+*/
+if ( !defined('WP_LOAD_IMPORTERS') ) { return; }
+
+require_once dirname(__FILE__) . '/class-bsdevat-importer.php';
+
+if ( class_exists( 'WP_Importer' ) ) {
+	
+/**
+ * Extends the base BSDev.at Importer to work with Serendipity
+ * 
+ * @version 0.0.1
+ */
+class Serendipity extends AbstractImporter {
+	
+	private $freetag_installed = NULL;
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see BSDEVat\Importer.AbstractImporter::get_textdomain()
+	 */
+	protected function get_textdomain() {
+		return 'bsdevat-importer-serendipity';
+	}
+	/**
+	 * (non-PHPdoc)
+	 * @see BSDEVat\Importer.AbstractImporter::get_class_slug()
+	 */
+	protected function get_class_slug() {
+		return 'bsdevat_importer_serendipity';
+	}
+	/**
+	 * (non-PHPdoc)
+	 * @see BSDEVat\Importer.AbstractImporter::get_class_label()
+	 */
+	protected function get_class_label() {
+		return 'BSDev.at - Importer: Serendipity';
+	}
+	/**
+	 * (non-PHPdoc)
+	 * @see BSDEVat\Importer.AbstractImporter::get_class_description()
+	 */
+	protected function get_class_description() {
+		return 'Full featured import from a <a href="http://s9y.org" target="_blank">Serendipity</a> Weblog.';
+	}
+	
+	protected function is_s9y_freetag_installed() {
+		if( is_null($this->freetag_installed) ) {
+			$result = $this->s9y_db->query( 'SELECT * FROM ' 
+				. $this->prefix . 'plugins WHERE path = \'serendipity_event_freetag\'' );
+			$this->freetag_installed = ( count( $result ) > 0 );
+		}
+		return $this->freetag_installed;
+	}
+	
+	// FIXME Check implementieren
+	protected function check_form( $step ) {
+		// $error = new WP_Error( 'invalid', __( '' ) );
+		// $error->add( 'invalid', __( 'Another msg' ) );
+		// http://core.trac.wordpress.org/browser/trunk/wp-includes/class-wp-error.php#L21
+		
+		$error = new \WP_Error();
+		
+		$validDB = array('pdomysql','pdopgsql');
+		if( !in_array( $_POST['s9y_type'], $validDB )) {
+			$error->add( 'invalid', __('Choose a valid database type!') );
+		}
+		
+		if( empty( $_POST['s9y_host'] )) {
+			$error->add( 'invalid', __('Enter a value for your database host!') );
+		}
+		
+		if( ! ctype_digit( $_POST['s9y_port'] ) ) {
+			
+		}
+		
+		return ( '' != $error->get_error_code() ? $error : NULL );
+	}
+	
+	// FIXME Setup implementieren
+	protected function setup() {
+		
+	}
+	
+	protected function generate_form( $step ) {
+		include 'form/s9y.php';
+	}
+}
+
+// Register the importer
+Serendipity::init();
+
+} // class_exists WP_Importer
